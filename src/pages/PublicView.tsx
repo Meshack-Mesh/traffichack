@@ -1,8 +1,10 @@
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWebSocketContext } from '@/contexts/WebSocketContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import RouteSimulator from '@/components/RouteSimulator';
+import ThemeToggle from '@/components/ThemeToggle';
 import { 
   Navigation, 
   AlertTriangle,
@@ -13,7 +15,7 @@ import {
 } from 'lucide-react';
 
 const PublicView = () => {
-  const { trafficLights, incidents } = useWebSocket();
+  const { trafficLights, incidents } = useWebSocketContext();
 
   const getCongestionLevel = (vehicleCount: number) => {
     if (vehicleCount < 40) return { level: 'Low', color: 'success' };
@@ -38,7 +40,10 @@ const PublicView = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-success/10">
       {/* Hero Section */}
-      <div className="bg-gradient-primary text-primary-foreground py-12">
+      <div className="bg-gradient-primary text-primary-foreground py-12 relative">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-4">
@@ -113,6 +118,11 @@ const PublicView = () => {
             </CardContent>
           </Card>
         )}
+
+        {/* Route Simulator */}
+        <div className="mb-6">
+          <RouteSimulator />
+        </div>
 
         {/* Congestion by Area */}
         <Card className="shadow-card mb-6">

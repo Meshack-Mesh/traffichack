@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useWebSocketContext } from '@/contexts/WebSocketContext';
 import StatusCard from '@/components/StatusCard';
 import TrafficChart from '@/components/TrafficChart';
+import TrafficHeatmap from '@/components/TrafficHeatmap';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +19,7 @@ import {
 
 const AnalystDashboard = () => {
   const navigate = useNavigate();
-  const { trafficLights, isConnected } = useWebSocket();
+  const { trafficLights } = useWebSocketContext();
 
   const totalVehicles = trafficLights.reduce((sum, l) => sum + l.vehicleCount, 0);
   const avgVehicles = Math.round(totalVehicles / trafficLights.length);
@@ -88,6 +90,7 @@ const AnalystDashboard = () => {
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
+              <ThemeToggle />
               <Button onClick={handleLogout} variant="outline" size="sm">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -186,43 +189,10 @@ const AnalystDashboard = () => {
           </Card>
         </div>
 
-        {/* Congestion Heatmap Info */}
-        <Card className="shadow-card mt-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Congestion Heatmap</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {trafficLights.map((light) => {
-                const congestionLevel = light.vehicleCount < 40 ? 'low' : 
-                                       light.vehicleCount < 70 ? 'medium' : 'high';
-                return (
-                  <div 
-                    key={light.id}
-                    className={`p-4 rounded-lg border transition-all ${
-                      congestionLevel === 'low' ? 'border-success bg-success/10' :
-                      congestionLevel === 'medium' ? 'border-warning bg-warning/10' :
-                      'border-destructive bg-destructive/10'
-                    }`}
-                  >
-                    <p className="text-xs font-medium mb-2 truncate">{light.location.split('&')[0]}</p>
-                    <p className="text-2xl font-bold mb-1">{light.vehicleCount}</p>
-                    <Badge 
-                      variant="outline"
-                      className={`text-xs ${
-                        congestionLevel === 'low' ? 'border-success text-success' :
-                        congestionLevel === 'medium' ? 'border-warning text-warning' :
-                        'border-destructive text-destructive'
-                      }`}
-                    >
-                      {congestionLevel.toUpperCase()}
-                    </Badge>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Interactive Heatmap */}
+        <div className="mt-6">
+          <TrafficHeatmap trafficLights={trafficLights} />
+        </div>
       </div>
     </div>
   );

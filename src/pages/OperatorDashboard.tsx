@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useWebSocket, TrafficLight } from '@/hooks/useWebSocket';
+import { TrafficLight } from '@/hooks/useWebSocket';
+import { useWebSocketContext } from '@/contexts/WebSocketContext';
 import TrafficMap from '@/components/TrafficMap';
 import StatusCard from '@/components/StatusCard';
 import IncidentPanel from '@/components/IncidentPanel';
+import CameraGrid from '@/components/CameraGrid';
+import WebSocketStatus from '@/components/WebSocketStatus';
+import ThemeToggle from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +30,7 @@ import {
 
 const OperatorDashboard = () => {
   const navigate = useNavigate();
-  const { trafficLights, incidents, isConnected, updateLightStatus } = useWebSocket();
+  const { trafficLights, incidents, isConnected, updateLightStatus } = useWebSocketContext();
   const [selectedLight, setSelectedLight] = useState<TrafficLight | null>(null);
 
   const activeSignals = trafficLights.filter(l => l.status === 'green').length;
@@ -63,10 +67,8 @@ const OperatorDashboard = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant={isConnected ? "default" : "secondary"} className="gap-1">
-                <Radio className={`w-3 h-3 ${isConnected ? 'animate-pulse-slow' : ''}`} />
-                {isConnected ? 'Live' : 'Disconnected'}
-              </Badge>
+              <WebSocketStatus isConnected={isConnected} />
+              <ThemeToggle />
               <Button onClick={handleLogout} variant="outline" size="sm">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
@@ -120,36 +122,7 @@ const OperatorDashboard = () => {
             </Card>
 
             {/* Camera Feeds */}
-            <Card className="shadow-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Camera className="w-5 h-5" />
-                  Camera Feeds
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  {trafficLights.slice(0, 4).map((light) => (
-                    <div key={light.id} className="aspect-video bg-muted rounded-lg relative overflow-hidden group">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent" />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Camera className="w-12 h-12 text-muted-foreground/50" />
-                      </div>
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm p-3">
-                        <p className="text-xs text-white font-medium">{light.location}</p>
-                        <p className="text-xs text-white/70">Live Feed</p>
-                      </div>
-                      <div className="absolute top-3 right-3">
-                        <div className="flex items-center gap-1 bg-destructive/90 text-destructive-foreground px-2 py-1 rounded text-xs">
-                          <div className="w-2 h-2 rounded-full bg-white animate-pulse-slow" />
-                          REC
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <CameraGrid trafficLights={trafficLights} />
           </div>
 
           {/* Right Sidebar */}

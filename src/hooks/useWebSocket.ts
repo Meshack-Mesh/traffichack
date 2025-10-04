@@ -32,6 +32,7 @@ export const useWebSocket = () => {
       { id: '3', location: 'Ngong Road & Kilimani', status: 'amber', vehicleCount: 56, lat: -1.2956, lng: 36.7828 },
       { id: '4', location: 'Thika Road & Outer Ring', status: 'green', vehicleCount: 34, lat: -1.2571, lng: 36.8868 },
       { id: '5', location: 'Waiyaki Way & Westlands', status: 'red', vehicleCount: 92, lat: -1.2635, lng: 36.8055 },
+      { id: '6', location: 'Mombasa Road & Airport', status: 'amber', vehicleCount: 65, lat: -1.3197, lng: 36.9275 },
     ];
 
     const initialIncidents: Incident[] = [
